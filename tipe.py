@@ -555,7 +555,7 @@ def penchee(symbole, p, test = True):
     j = 0
     while cherche and -5 <= j <= 5:
         while 0 <= i + p[0] < len(symbole[0]) and cherche:
-            if symbole[p[1] + j][p[0] + i] == 1:
+            if symbole[p[1] + j][p[0] + i][1] == 0:
                 cherche = False
             else :
                 if i < 0:
@@ -571,9 +571,8 @@ def penchee(symbole, p, test = True):
     return (p[0] + i, p[1] + j)
     
 def recup_motif(symbole, p):
-    """récupère le motif dans lequel p est inscrit"""
-##    (x, y) = penchee(symbole, p, False)
-    (x, y) = p
+    """récupère le motif le plus près du pixel en question en repérant le rectangle dans lequel s'inscrit la zone connexe la plus proche"""
+    (x, y) = penchee(symbole, p, False)
     if x == -1:
         return (-1, -1, -1, -1)
     vus = np.zeros((len(symbole), len(symbole[0])))
@@ -582,7 +581,7 @@ def recup_motif(symbole, p):
     while pile != []:#recherche des coordonnées extrémales avec un parcours en profondeur de la zone connexe
         (x, y) = pile.pop()
         vus[y][x] = 1
-        if symbole[y][x] == 1:
+        if symbole[y][x][1] != 1:
             if x > xmax:
                 xmax = x
             elif x < xmin:
@@ -616,6 +615,20 @@ def thresholding(carte):
                 else:
                     new[i][j] = [1,1,1]
     return new
+
+def chiffre(symbole):
+    """repère la zone où se trouve le motif de la valeur"""
+    (xmin, xmax, ymin, ymax) = recup_motif(symbole, (50, 50))
+    if (xmin, xmax, ymin, ymax) == (-1, -1, -1, -1):
+        return np.array([[]])
+    return symbole[ymin - 1: ymax +2, xmin-1:xmax + 2]
+            
+def couleur(symbole):
+    """repère la zone où se trouve le motif de la couleur"""
+    (xmin, xmax, ymin, ymax) = recup_motif(symbole, (50, 105))
+    if (xmin, xmax, ymin, ymax) == (-1, -1, -1, -1):
+        return np.array([[]])
+    return symbole[ymin - 1: ymax +2, xmin-1:xmax + 2]
 
 def m (coins):
     """
@@ -672,14 +685,6 @@ def recreate_image(A, bc, bl, img, haut, larg):
             im[i,j] = img[int(100*y/z), int(100*x/z)]
     return im
 
-def symbole(img):
-    """
-    Entrée : img est le coin redressé
-    Sortie : liste des coordonnées des rectangles minimaux contenant le chiffre et la couleur
-    """
-    bords = canny(gradient(rgb2gray(img)), False)
-    return [recup_motif(bords, penchee(bords, (50, 105))), recup_motif(bords, penchee(bords, (50, 50)))]
-
 def reconstitue_rectangle (coins, larg, img) :
     """
     Entrées :
@@ -715,8 +720,8 @@ def reconstitue_rectangle (coins, larg, img) :
         bc = -bc
     #on calcule les coordonnées du rectangle dans lequel se trouvent le chiffre et le symbole
     im = recreate_image(A, bc, bl, img, haut, larg)
-    [(xmine, xmaxe, ymine, ymaxe), (xminv, xmaxv, yminv, ymaxv)] = symbole(im)
-    if xmine == -1 or xminv == -1: #on a échangé bord court et bord long
+    symbole = thresholding(im)
+    if penchee(symbole, (50, 105)) == (-1, -1) or penchee(symbole, (50, 50)) == (-1, -1):
         if chg_sg:
             bc = -bc
             A = A - bc
@@ -725,10 +730,9 @@ def reconstitue_rectangle (coins, larg, img) :
             A = A + bc
             bc = -bc
         im = recreate_image(A, bc, bl, img, haut, larg)
-        [(xmine, xmaxe, ymine, ymaxe), (xminv, xmaxv, yminv, ymaxv)] = symbole(im)
-    s = thresholding(im)
-    ch = s[yminv - 1: ymaxv +2, xminv-1:xmaxv + 2]
-    coul = s[ymine - 1: ymaxe +2, xmine-1:xmaxe + 2]
+        symbole = thresholding(im)
+    ch = chiffre(symbole)
+    coul = couleur(symbole)
     return im, ch, coul
 
 
