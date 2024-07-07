@@ -28,3 +28,4 @@ analyse_carte("carreau3", m_temps = True)
 #renvoie ('3', 'carreau') et affiche le processus
 analyse_carte("carreau3", affichage = True)
 ```
+Penser à télécharger également les photos de cartes, et à conserver le chemin relatif (ou alors modifier le code source dans la fonction `analyse_carte` qui charge l'image.
