@@ -14,9 +14,9 @@ This project was written in Python to have an easy access to plotting functions.
 
 ## Utilisation
 
-La fonction principale est `analyse_carte`. Par défaut, elle se contente de renvoyer la valeur et l'enseigne identifiées. Les options `m_temps` et `affichage` permettent respectivement de renvoyer le détail du temps de calcul (i.e. le temps du filtre de Canny, de la transformation de Hough, de la reconstitution du symbole, d'identification de l'enseigne et de la valeur)  de surcroît, et d'afficher le processus de calcul de l'algorithme.
+La fonction principale est `analyse_carte`. Par défaut, elle se contente de renvoyer la valeur et l'enseigne identifiées. Les options `m_temps` et `affichage` permettent respectivement de renvoyer le détail du temps de calcul (i.e. le temps du filtre de Canny, de la transformation de Hough, de la reconstitution du symbole, d'identification de l'enseigne et de la valeur)  de surcroît, et d'afficher le processus de calcul de l'algorithme. L'option `chemin` permet de spécifier le chemin relatif, où se situe la carte. Par défaut, il s'agit de `photo_cartes/`.
 
-Exemple d'utilisation :
+Exemples d'utilisation :
 
 ```python
 #renvoie ('3', 'carreau')
@@ -24,8 +24,5 @@ analyse_carte("carreau3")
 
 #renvoie ('3', 'carreau', '0.3264789581298828', '0.11625790596008301', '0.29645872116088867', '0.0017611980438232422', '0.041744232177734375')
 analyse_carte("carreau3", m_temps = True)
-
-#renvoie ('3', 'carreau') et affiche le processus
-analyse_carte("carreau3", affichage = True)
 ```
-Penser à télécharger également les photos de cartes, et à conserver le chemin relatif (ou alors modifier le code source dans la fonction `analyse_carte` qui charge l'image.
+Quelques photographies de cartes sont mises à disposition dans l'archive (non exhaustives, pour des raisons de place mémoire). Pour tester le code sur d'autres photographies, veiller à bien respecter les conditions de prises de photographie.
